@@ -1,0 +1,29 @@
+{
+  "name": "barcode-app",
+  "version": "1.0.0",
+  "main": "server.js",
+  "bin": "server.js",
+  "scripts": {
+    "start": "node server.js",
+	"build": "pkg ."
+  },
+  "pkg": {
+    "assets": [
+      "icon.ico",
+      "node_modules/systray/traybin/*",
+      "node_modules/bootstrap/dist/**/*"
+    ],
+    "targets": [
+      "node24-win-x64"
+    ],
+    "outputPath": "dist"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "express": "^4.22.3",
+    "jsbarcode": "^3.12.3",
+    "lowdb": "^1.0.0",
+    "systray": "^1.0.5",
+    "xmldom": "^0.6.0"
+  }
+}
