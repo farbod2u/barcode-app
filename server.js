@@ -65,6 +65,15 @@ function generateSVG(text, format) {
   return xmlSerializer.serializeToString(svgNode);
 }
 
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function renderPage() {
   return `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -276,6 +285,8 @@ function buildApp() {
 
     const allowedFormats = ['CODE128', 'CODE128A', 'CODE128B', 'CODE128C'];
     const format = allowedFormats.includes(req.query.format) ? req.query.format : 'CODE128';
+    const title = escapeHtml(record.fileId || 'پرونده');
+    const description = escapeHtml(record.description || '');
 
     let svg;
     try {
@@ -292,12 +303,45 @@ function buildApp() {
 <html dir="rtl" lang="fa">
 <head><meta charset="UTF-8"><title>چاپ بارکد</title>
 <style>
-  body { display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
-  @media print { body { height:auto; } }
+  body {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    margin:0;
+    font-family:Tahoma, Arial, sans-serif;
+    background:#fff;
+  }
+  .print-card {
+    text-align:center;
+    padding:24px 18px;
+    border:2px solid #000;
+    border-radius:10px;
+    background:#fff;
+  }
+  .print-title {
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:12px;
+    color:#111;
+  }
+  .print-desc {
+    font-size:14px;
+    margin-top:10px;
+    color:#333;
+  }
+  @media print {
+    body { min-height:auto; }
+    .print-card { border:none; padding:0; }
+  }
 </style>
 </head>
 <body>
-  ${svg}
+  <div class="print-card">
+    <div class="print-title">پرونده: ${title}</div>
+    ${description ? `<div class="print-desc">توضیحات: ${description}</div>` : ''}
+    ${svg}
+  </div>
   <script>window.onload = function () { window.print(); };</script>
 </body>
 </html>`);

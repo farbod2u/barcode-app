@@ -4,12 +4,45 @@
 <meta charset="UTF-8">
 <title>چاپ بارکد</title>
 <style>
-  body { display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
-  @media print { body { height:auto; } }
+  body {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    margin:0;
+    font-family:Tahoma, Arial, sans-serif;
+    background:#fff;
+  }
+  .print-card {
+    text-align:center;
+    padding:24px 18px;
+    border:2px solid #000;
+    border-radius:10px;
+    background:#fff;
+  }
+  .print-title {
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:12px;
+    color:#111;
+  }
+  .print-desc {
+    font-size:14px;
+    margin-top:10px;
+    color:#333;
+  }
+  @media print {
+    body { min-height:auto; }
+    .print-card { border:none; padding:0; }
+  }
 </style>
 </head>
 <body>
-  {{SVG}}
+  <div class="print-card">
+    <div class="print-title">پرونده: {{TITLE}}</div>
+    {{DESCRIPTION}}
+    {{SVG}}
+  </div>
   <script>
     window.onload = function () { window.print(); };
   </script>
