@@ -356,8 +356,8 @@ function startServer() {
   if (server) return;
   const app = buildApp();
   server = app.listen(PORT, () => {
-    console.log('سرور در حال اجرا: http://localhost:' + PORT);
-    console.log('فایل دیتابیس: ' + DB_FILE);
+    console.log('Server is running :::=> http://localhost:' + PORT);
+    console.log('Database file path ::=> ' + DB_FILE);
   });
 }
 
