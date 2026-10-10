@@ -104,7 +104,14 @@ function renderPage() {
       <form id="recordForm">
         <div class="mb-3">
           <label class="form-label">شناسه پرونده <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="fileId" required>
+
+  <input type="text" class="form-control" id="fileId" required
+         maxlength="21"
+        pattern="[A-Za-z][0-9]{20}"
+       placeholder="مثال: M12345678900000000000"
+        dir="ltr">
+ <div class="form-text">یک حرف انگلیسی و سپس دقیقاً ۲۰ رقم عددی (مجموعاً ۲۱ کاراکتر)</div>
+
         </div>
         <div class="mb-3">
           <label class="form-label">توضیحات</label>
@@ -178,6 +185,12 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
+  const fileIdPattern = /^[A-Za-z][0-9]{20}$/;
+ if (!fileIdPattern.test(fileId)) {
+   alert('فرمت شناسه پرونده نامعتبر است...');
+   return;
+ }
+
   const res = await fetch('/records', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -229,9 +242,11 @@ const formatModal = new bootstrap.Modal(document.getElementById('barcodeFormatMo
 
 function printBarcode(id) {
   pendingPrintId = id;
-  formatModal.show();
+  //formatModal.show();
+  // چاپ مستقیم بارکد
+  window.open('/barcode/print/' + pendingPrintId + '?format=CODE128B', '_blank', 'width=640,height=480');
 }
-
+  
 document.getElementById('confirmPrintBtn').addEventListener('click', () => {
   const format = document.querySelector('input[name="bcFormat"]:checked').value;
   formatModal.hide();
@@ -264,9 +279,18 @@ function buildApp() {
     if (!fileId || !fileId.trim()) {
       return res.status(400).json({ message: 'شناسه پرونده الزامی است' });
     }
+
+    const trimmedFileId = fileId.trim();
+    const fileIdPattern = /^[A-Za-z][0-9]{20}$/;
+    if (!fileIdPattern.test(trimmedFileId)) {
+      return res.status(400).json({
+        message: 'فرمت شناسه پرونده نامعتبر است. باید با یک حرف انگلیسی شروع شود و دقیقاً ۲۰ رقم عددی بعد از آن بیاید (مجموعاً ۲۱ کاراکتر).'
+      });
+    }
+
     const record = {
       id: Date.now().toString(),
-      fileId: fileId.trim(),
+      fileId: trimmedFileId,
       description: description || '',
       createdAt: new Date().toISOString(),
     };
@@ -402,3 +426,5 @@ systray.onClick((action) => {
 // شروع خودکار سرور هنگام اجرا
 extractBootstrapAssets();
 startServer();
+
+require('child_process').exec(`start http://localhost:${PORT}`);
